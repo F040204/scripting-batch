@@ -347,7 +347,18 @@ def status_checker_data():
 
     # Match batches with SMB data and populate machine_values
     for batch in batches:
-        batch["machine_values"] = None
+        # First, try to use existing machine data from the batch object
+        if "machine_hole_id" in batch or "machine_from" in batch or "machine_to" in batch or "machine_machine" in batch:
+            batch["machine_values"] = {
+                "hole_id": batch.get("machine_hole_id", "-"),
+                "from": batch.get("machine_from", "-"),
+                "to": batch.get("machine_to", "-"),
+                "machine": batch.get("machine_machine", "-")
+            }
+        else:
+            batch["machine_values"] = None
+        
+        # Then, override with fresh SMB data if available
         for smb in smb_data:
             if smb["M_hole_id"] == batch["hole_id"]:
                 batch["machine_values"] = {
