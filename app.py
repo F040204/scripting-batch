@@ -71,10 +71,24 @@ def init_data_files():
                 'password': generate_password_hash(admin_password),
                 'created_at': datetime.now().isoformat()
             }
-            logger.info(f"Admin user '{admin_username}' created from environment variables")
+            logger.info("Admin user created from environment variables")
         
         with open(USERS_FILE, 'w') as f:
             json.dump(users, f, indent=4)
+    else:
+        # If users file exists, check if we need to add admin user
+        admin_username = os.environ.get('ADMIN_USERNAME')
+        admin_password = os.environ.get('ADMIN_PASSWORD')
+        
+        if admin_username and admin_password:
+            users = load_users()
+            if admin_username not in users:
+                users[admin_username] = {
+                    'password': generate_password_hash(admin_password),
+                    'created_at': datetime.now().isoformat()
+                }
+                save_users(users)
+                logger.info("Admin user added to existing users file")
     
     if not os.path.exists(BATCHES_FILE):
         with open(BATCHES_FILE, 'w') as f:
