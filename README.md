@@ -122,6 +122,41 @@ The application now gracefully handles:
 
 If the SMB server is unreachable, the Status Checker will still function but show no machine data.
 
+## Testing SMB Connection
+
+### Quick Test
+
+Run the included test script to verify SMB connectivity:
+
+```bash
+python test_smb_connection.py
+```
+
+This will test:
+1. TCP connection to SMB server
+2. Authentication
+3. Share access
+4. Directory listing
+5. Batch data reading
+
+### Visual Test
+
+After starting the application, visit the Status Checker page at `/status_checker`. The page displays a connection status indicator at the top:
+
+- **Green**: ✓ Conexión SMB: Activa (X batches encontrados)
+- **Red**: ✗ Conexión SMB: Error - [error message]
+- **Yellow**: ⚠ Conexión SMB: Estado desconocido
+
+The indicator refreshes automatically every 30 seconds.
+
+### Detailed Status
+
+For comprehensive status information, see `SMB_CONNECTION_STATUS.md` which includes:
+- Full implementation details
+- Troubleshooting guide
+- Testing procedures
+- Common issues and solutions
+
 ## Troubleshooting
 
 ### SMB Connection Issues

@@ -17,6 +17,9 @@
     </div>
 
     <div class="container">
+        <div id="smbStatus" style="padding: 10px; margin-bottom: 15px; border-radius: 5px; font-weight: bold; text-align: center;">
+            Verificando conexión SMB...
+        </div>
         <div class="table-container">
             <table class="data-table status-table">
                 <thead>
@@ -88,6 +91,39 @@
         </div>
     <script>
         let currentPage = 1;
+
+        async function checkSMBStatus() {
+            try {
+                const response = await fetch('/health');
+                const health = await response.json();
+                const statusDiv = document.getElementById('smbStatus');
+                
+                if (health.services && health.services.smb) {
+                    if (health.services.smb.status === 'ok') {
+                        statusDiv.style.backgroundColor = '#d4edda';
+                        statusDiv.style.color = '#155724';
+                        statusDiv.style.border = '1px solid #c3e6cb';
+                        statusDiv.innerHTML = `✓ Conexión SMB: Activa (${health.services.smb.batches_found || 0} lotes encontrados en servidor)`;
+                    } else {
+                        statusDiv.style.backgroundColor = '#f8d7da';
+                        statusDiv.style.color = '#721c24';
+                        statusDiv.style.border = '1px solid #f5c6cb';
+                        statusDiv.innerHTML = `✗ Conexión SMB: Error - ${health.services.smb.error || 'No disponible'}`;
+                    }
+                } else {
+                    statusDiv.style.backgroundColor = '#fff3cd';
+                    statusDiv.style.color = '#856404';
+                    statusDiv.style.border = '1px solid #ffeaa7';
+                    statusDiv.innerHTML = '⚠ Conexión SMB: Estado desconocido';
+                }
+            } catch (error) {
+                const statusDiv = document.getElementById('smbStatus');
+                statusDiv.style.backgroundColor = '#f8d7da';
+                statusDiv.style.color = '#721c24';
+                statusDiv.style.border = '1px solid #f5c6cb';
+                statusDiv.innerHTML = '✗ Error al verificar estado de conexión SMB';
+            }
+        }
 
         async function loadStatusData(page = 1) {
             const response = await fetch(`/api/status_checker_data?page=${page}`);
@@ -213,7 +249,12 @@ document.getElementById("editBatchForm").addEventListener("submit", async (e) =>
         alert("Error al guardar cambios");
     }
 });
-      loadStatusData()
+
+        // Initialize page
+        checkSMBStatus();
+        loadStatusData();
+        // Refresh SMB status every 30 seconds
+        setInterval(checkSMBStatus, 30000);
     </script>
 </body>
 </html>
