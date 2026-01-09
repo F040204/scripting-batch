@@ -258,24 +258,6 @@ table.status-table th {
 
 
 /* ================================================
-   PAGINATION
-================================================ */
-
-#pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-#pagination button {
-    margin: 4px;
-    padding: 6px 12px;
-    border-radius: 5px;
-}
-
-
-
-/* ================================================
    MODAL BASE
 ================================================ */
 
