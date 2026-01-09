@@ -15,12 +15,14 @@ from smbprotocol.exceptions import SMBException
 from smbprotocol.open import ImpersonationLevel
 from smbprotocol.file_info import FileInformationClass
 
-#Logueos
+# Logueos
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import os
 import threading
 import time
+
+
 # =========================================================
 # SMB CONNECTION
 # =========================================================
@@ -31,23 +33,20 @@ def smb_connect(server, share, username, password):
     conn.connect()
 
     # Crear sesión SMB (esta versión NO soporta ClientConfig)
-    session = Session(
-        connection=conn,
-        username=username,
-        password=password
-    )
+    session = Session(connection=conn, username=username, password=password)
     session.connect()
 
     # Validación anti-guest
     if session.session_id == 0:
-        raise Exception("ERROR SMB: Sesión autenticada como GUEST. Credenciales o dominio incorrectos.")
+        raise Exception(
+            "ERROR SMB: Sesión autenticada como GUEST. Credenciales o dominio incorrectos."
+        )
 
     # Montar el recurso compartido
-    tree = TreeConnect(session, fr"\\{server}\{share}")
+    tree = TreeConnect(session, rf"\\{server}\{share}")
     tree.connect()
 
     return conn, session, tree
-
 
 
 # =========================================================
@@ -55,11 +54,11 @@ def smb_connect(server, share, username, password):
 # =========================================================
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-this-in-production'
+app.secret_key = "your-secret-key-change-this-in-production"
 
-USERS_FILE = 'users.json'
-BATCHES_FILE = 'batches.json'
-SMB_PATH = '//orexplorefs04.local/pond/incoming/Orexplore/'
+USERS_FILE = "users.json"
+BATCHES_FILE = "batches.json"
+SMB_PATH = "//orexplorefs04.local/pond/incoming/Orexplore/"
 
 # =========================================================
 # LOGGING PROFESIONAL
@@ -75,16 +74,15 @@ LOG_FILE = os.path.join(LOG_DIR, "smb_monitor.log")
 # Handler de rotación semanal
 handler = TimedRotatingFileHandler(
     LOG_FILE,
-    when="W0",             # Rotar los lunes
+    when="W0",  # Rotar los lunes
     interval=1,
-    backupCount=4,         # Mantener 4 semanas
-    encoding="utf-8"
+    backupCount=4,  # Mantener 4 semanas
+    encoding="utf-8",
 )
 
 # Formato profesional
 formatter = logging.Formatter(
-    "[%(asctime)s] [%(levelname)s] %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
+    "[%(asctime)s] [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
 )
 
 handler.setFormatter(formatter)
@@ -99,20 +97,22 @@ monitor_logger.addHandler(handler)
 # INITIAL DATA FILES
 # =========================================================
 
+
 def init_data_files():
     if not os.path.exists(USERS_FILE):
         users = {
-            'Felipe.Campos': {
-                'password': generate_password_hash('WeScanRocks'),
-                'created_at': datetime.now().isoformat()
+            "Felipe.Campos": {
+                "password": generate_password_hash("WeScanRocks"),
+                "created_at": datetime.now().isoformat(),
             }
         }
-        with open(USERS_FILE, 'w') as f:
+        with open(USERS_FILE, "w") as f:
             json.dump(users, f, indent=4)
 
     if not os.path.exists(BATCHES_FILE):
-        with open(BATCHES_FILE, 'w') as f:
+        with open(BATCHES_FILE, "w") as f:
             json.dump([], f)
+
 
 init_data_files()
 
@@ -121,17 +121,20 @@ init_data_files()
 # DATA LOAD/SAVE UTILITIES
 # =========================================================
 
+
 def load_users():
-    with open(USERS_FILE, 'r') as f:
+    with open(USERS_FILE, "r") as f:
         return json.load(f)
 
+
 def save_users(users):
-    with open(USERS_FILE, 'w') as f:
+    with open(USERS_FILE, "w") as f:
         json.dump(users, f, indent=4)
+
 
 def load_batches():
     """Carga y renumera en orden ASCENDENTE siempre."""
-    with open(BATCHES_FILE, 'r') as f:
+    with open(BATCHES_FILE, "r") as f:
         batches = json.load(f)
 
     # Renumerar ASCENDENTE
@@ -140,8 +143,9 @@ def load_batches():
 
     return batches
 
+
 def save_batches(batches):
-    with open(BATCHES_FILE, 'w') as f:
+    with open(BATCHES_FILE, "w") as f:
         json.dump(batches, f, indent=4)
 
 
@@ -149,17 +153,20 @@ def save_batches(batches):
 # GENERAL UTILITIES
 # =========================================================
 
+
 def is_logged():
     return "username" in session
 
+
 def paginate(data, page, per_page):
     start = (page - 1) * per_page
-    return data[start:start + per_page]
+    return data[start : start + per_page]
 
 
 # =========================================================
 # FILE CHECK
 # =========================================================
+
 
 def check_file_values(hole_id, from_val, to_val, machine):
     try:
@@ -167,6 +174,7 @@ def check_file_values(hole_id, from_val, to_val, machine):
         return True
     except:
         return False
+
 
 def get_preview_image(hole_id, to_val):
     try:
@@ -179,13 +187,14 @@ def get_preview_image(hole_id, to_val):
 # METERS
 # =========================================================
 
+
 def calculate_metros_escaneados():
     batches = load_batches()
     total = 0
     for batch in batches:
-        if batch.get('status') == 'pending': #Esperando comparacion
+        if batch.get("status") == "pending":  # Esperando comparacion
             try:
-                total += float(batch.get('to', 0)) - float(batch.get('from', 0))
+                total += float(batch.get("to", 0)) - float(batch.get("from", 0))
             except:
                 pass
     return round(total, 2)
@@ -195,69 +204,77 @@ def calculate_metros_escaneados():
 # ROUTES
 # =========================================================
 
-@app.route('/')
-def root():
-    return redirect(url_for('index_route'))
 
-@app.route('/index/')
+@app.route("/")
+def root():
+    return redirect(url_for("index_route"))
+
+
+@app.route("/index/")
 def index_route():
     if not is_logged():
-        return redirect(url_for('login'))
-    return render_template('index.html', username=session['username'])
+        return redirect(url_for("login"))
+    return render_template("index.html", username=session["username"])
 
 
 # ------------------- LOGIN -------------------
 
-@app.route('/login', methods=['GET', 'POST'])
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.json
-        username = data.get('username')
-        password = data.get('password')
+        username = data.get("username")
+        password = data.get("password")
 
         users = load_users()
 
-        if username in users and check_password_hash(users[username]['password'], password):
-            session['username'] = username
-            return jsonify({'success': True})
+        if username in users and check_password_hash(
+            users[username]["password"], password
+        ):
+            session["username"] = username
+            return jsonify({"success": True})
 
-        return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'})
+        return jsonify(
+            {"success": False, "message": "Usuario o contraseña incorrectos"}
+        )
 
-    return render_template('login.html')
+    return render_template("login.html")
 
 
-@app.route('/logout')
+@app.route("/logout")
 def logout():
-    session.pop('username', None)
-    return redirect(url_for('login'))
+    session.pop("username", None)
+    return redirect(url_for("login"))
 
 
 # ------------------- CREATE USER -------------------
 
-@app.route('/create_user', methods=['GET', 'POST'])
+
+@app.route("/create_user", methods=["GET", "POST"])
 def create_user():
     if not is_logged():
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
 
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.json
-        username = data.get('username')
-        password = data.get('password')
+        username = data.get("username")
+        password = data.get("password")
 
         users = load_users()
 
         if username in users:
-            return jsonify({'success': False, 'message': 'El usuario ya existe'})
+            return jsonify({"success": False, "message": "El usuario ya existe"})
 
         users[username] = {
-            'password': generate_password_hash(password),
-            'created_at': datetime.now().isoformat()
+            "password": generate_password_hash(password),
+            "created_at": datetime.now().isoformat(),
         }
 
         save_users(users)
-        return jsonify({'success': True})
+        return jsonify({"success": True})
 
-    return render_template('create_user.html')
+    return render_template("create_user.html")
 
 
 # ------------------- BATCHES -------------------
@@ -265,7 +282,8 @@ def create_user():
 # API: LISTAR Y CREAR BATCHES
 # ============================================================
 
-@app.route('/api/batches', methods=['GET', 'POST'])
+
+@app.route("/api/batches", methods=["GET", "POST"])
 def batches_api():
     if "username" not in session:
         return jsonify({"error": "No autorizado"}), 401
@@ -282,11 +300,13 @@ def batches_api():
         start = (page - 1) * per_page
         end = start + per_page
 
-        return jsonify({
-            "batches": batches[start:end],
-            "total_pages": (len(batches) + per_page - 1) // per_page,
-            "current_page": page
-        })
+        return jsonify(
+            {
+                "batches": batches[start:end],
+                "total_pages": (len(batches) + per_page - 1) // per_page,
+                "current_page": page,
+            }
+        )
 
     if request.method == "POST":
         data = request.json
@@ -300,7 +320,7 @@ def batches_api():
             "machine": data.get("machine"),
             "comentarios": data.get("comentarios", ""),
             "status": "correct",
-            "created_at": datetime.now().isoformat()
+            "created_at": datetime.now().isoformat(),
         }
 
         batches.append(new_batch)
@@ -308,8 +328,9 @@ def batches_api():
 
         return jsonify({"success": True})
 
+
 # ------------------- DELETE -------------------
-@app.route('/api/batches/<int:batch_number>', methods=['DELETE'])
+@app.route("/api/batches/<int:batch_number>", methods=["DELETE"])
 def delete_batch(batch_number):
     if "username" not in session:
         return jsonify({"error": "No autorizado"}), 401
@@ -327,8 +348,9 @@ def delete_batch(batch_number):
     save_batches(new_list)
     return jsonify({"success": True})
 
+
 # ------------------- EDITAR BATCH FROM STATUS CHECKER-------------------
-@app.route('/api/batches/<int:batch_number>', methods=['PUT'])
+@app.route("/api/batches/<int:batch_number>", methods=["PUT"])
 def update_batch(batch_number):
     if "username" not in session:
         return jsonify({"error": "No autorizado"}), 401
@@ -352,30 +374,34 @@ def update_batch(batch_number):
 
     return jsonify({"success": True})
 
+
 # ------------------- PREVIEW -------------------
 
-@app.route('/api/preview/<int:batch_number>')
+
+@app.route("/api/preview/<int:batch_number>")
 def preview_image(batch_number):
     if not is_logged():
-        return jsonify({'error': 'No autorizado'}), 401
+        return jsonify({"error": "No autorizado"}), 401
 
     batches = load_batches()
 
-    batch = next((b for b in batches if b['batch_number'] == batch_number), None)
+    batch = next((b for b in batches if b["batch_number"] == batch_number), None)
 
     if not batch:
-        return jsonify({'error': 'Batch no encontrado'}), 404
+        return jsonify({"error": "Batch no encontrado"}), 404
 
-    return jsonify({'image_path': get_preview_image(batch['hole_id'], batch['to'])})
+    return jsonify({"image_path": get_preview_image(batch["hole_id"], batch["to"])})
 
 
 # ------------------- STATUS CHECKER -------------------
 
-@app.route('/status_checker')
+
+@app.route("/status_checker")
 def status_checker():
     if not is_logged():
-        return redirect(url_for('login'))
-    return render_template('status_checker.html', username=session['username'])
+        return redirect(url_for("login"))
+    return render_template("status_checker.html", username=session["username"])
+
 
 # ============================================================
 # FUNCION: ACTUALIZAR EL ESTADO DE BATCHES (STATUS CHECKER)
@@ -390,11 +416,15 @@ def actualizar_estado_batches():
         batch["status"] = "pending"
         batch["from"] = batch.get("from", "")
 
-        match = next((
-            smb for smb in smb_data
-            if smb.get("M_hole_id") == batch.get("hole_id")
-            and str(smb.get("M_to")) == str(batch.get("to"))
-        ), None)
+        match = next(
+            (
+                smb
+                for smb in smb_data
+                if smb.get("M_hole_id") == batch.get("hole_id")
+                and str(smb.get("M_to")) == str(batch.get("to"))
+            ),
+            None,
+        )
 
         # SMB no encontró nada → pending (tabla queda igual)
         if not match:
@@ -411,43 +441,44 @@ def actualizar_estado_batches():
     save_batches(batches)
 
 
-
 # ============================================================
 # API: STATUS CHECKER DATA
 # ============================================================
 
-@app.route('/api/status_checker_data')
+
+@app.route("/api/status_checker_data")
 def status_checker_data():
     if not is_logged():
-        return jsonify({'error': 'No autorizado'}), 401
+        return jsonify({"error": "No autorizado"}), 401
 
-    page = int(request.args.get('page', 1))
+    page = int(request.args.get("page", 1))
     per_page = 30
 
     batches = load_batches()
     smb_data = leer_orexplore_smb()
 
-def norm_str(v):
-    return str(v).strip() if v is not None else ""
+    def norm_str(v):
+        return str(v).strip() if v is not None else ""
 
-def norm_num(v):
-    try:
-        return float(v)
-    except (TypeError, ValueError):
+    def norm_num(v):
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return None
+
+        # unreachable safeguard
         return None
 
-    # unreachable safeguard
-    return None
-
-for batch in batches:
+    for batch in batches:
         match = next(
             (
-                smb for smb in smb_data
+                smb
+                for smb in smb_data
                 if norm_str(smb.get("M_hole_id")) == norm_str(batch.get("hole_id"))
                 and norm_num(smb.get("M_from")) == norm_num(batch.get("from"))
                 and norm_num(smb.get("M_to")) == norm_num(batch.get("to"))
             ),
-            None
+            None,
         )
 
         # Estructura SIEMPRE presente (frontend depende de esto)
@@ -455,7 +486,7 @@ for batch in batches:
             "hole_id": match.get("M_hole_id") if match else "-",
             "from": match.get("M_from") if match else "-",
             "to": match.get("M_to") if match else "-",
-            "machine": "OREXPLORE" if match else "-"
+            "machine": "OREXPLORE" if match else "-",
         }
 
         if not match:
@@ -463,16 +494,18 @@ for batch in batches:
         else:
             batch["status"] = "correct"
 
-        # Paginación
-        total_pages = (len(batches) + per_page - 1) // per_page
-        start = (page - 1) * per_page
-        end = start + per_page
+    # Paginación
+    total_pages = (len(batches) + per_page - 1) // per_page
+    start = (page - 1) * per_page
+    end = start + per_page
 
-    return jsonify({
+    return jsonify(
+        {
             "batches": batches[start:end],
             "total_pages": total_pages,
-            "current_page": page
-    })
+            "current_page": page,
+        }
+    )
 
 
 # =========================================================
@@ -485,13 +518,15 @@ from smbprotocol.open import (
     FileAttributes,
     ShareAccess,
     FilePipePrinterAccessMask,
-    ImpersonationLevel
+    ImpersonationLevel,
 )
 from smbprotocol.file_info import FileInformationClass
 from smbprotocol.exceptions import SMBException
 
+
 def smb_path(*parts):
     return "\\".join(p.strip("\\/") for p in parts if p)
+
 
 def leer_orexplore_smb():
     """
@@ -514,10 +549,7 @@ def leer_orexplore_smb():
             return []
 
         conn, session, tree = smb_connect(
-            server=SERVER,
-            share=SHARE,
-            username=USERNAME,
-            password=PASSWORD
+            server=SERVER, share=SHARE, username=USERNAME, password=PASSWORD
         )
 
         try:
@@ -528,11 +560,13 @@ def leer_orexplore_smb():
                 share_access=0x00000007,
                 create_disposition=CreateDisposition.FILE_OPEN,
                 create_options=0x00000001,
-                impersonation_level=ImpersonationLevel.Impersonation
+                impersonation_level=ImpersonationLevel.Impersonation,
             )
             base_dir.create()
 
-            holes = base_dir.query_directory("*", FileInformationClass.FILE_DIRECTORY_INFORMATION)
+            holes = base_dir.query_directory(
+                "*", FileInformationClass.FILE_DIRECTORY_INFORMATION
+            )
 
             for hole in holes:
                 hole_name = hole["file_name"]
@@ -549,13 +583,15 @@ def leer_orexplore_smb():
                         share_access=0x00000007,
                         create_disposition=CreateDisposition.FILE_OPEN,
                         create_options=0x00000001,
-                        impersonation_level=ImpersonationLevel.Impersonation
+                        impersonation_level=ImpersonationLevel.Impersonation,
                     )
                     hole_dir.create()
                 except SMBException:
                     continue
 
-                batches = hole_dir.query_directory("batch-*", FileInformationClass.FILE_DIRECTORY_INFORMATION)
+                batches = hole_dir.query_directory(
+                    "batch-*", FileInformationClass.FILE_DIRECTORY_INFORMATION
+                )
 
                 for batch in batches:
                     batch_name = batch["file_name"]
@@ -574,7 +610,7 @@ def leer_orexplore_smb():
                             desired_access=0x00000001,
                             share_access=0x00000007,
                             create_disposition=CreateDisposition.FILE_OPEN,
-                            impersonation_level=ImpersonationLevel.Impersonation
+                            impersonation_level=ImpersonationLevel.Impersonation,
                         )
                         depth_file.create()
 
@@ -586,12 +622,14 @@ def leer_orexplore_smb():
 
                         m_from = round(float(lines[0]), 2)
 
-                        resultados.append({
-                            "M_hole_id": hole_name.strip(),
-                            "M_from": m_from,
-                            "M_to": m_to,
-                            "M_machine": "OREXPLORE"
-                        })
+                        resultados.append(
+                            {
+                                "M_hole_id": hole_name.strip(),
+                                "M_from": m_from,
+                                "M_to": m_to,
+                                "M_machine": "OREXPLORE",
+                            }
+                        )
 
                         depth_file.close()
 
@@ -611,21 +649,23 @@ def leer_orexplore_smb():
 
     return resultados
 
+
 # =========================================================
 # METERS PAGE
 # =========================================================
 
-@app.route('/metros')
+
+@app.route("/metros")
 def metros():
     if not is_logged():
-        return redirect(url_for('login'))
-    return render_template('metros.html', username=session['username'])
+        return redirect(url_for("login"))
+    return render_template("metros.html", username=session["username"])
 
 
-@app.route('/api/metros_data')
+@app.route("/api/metros_data")
 def metros_data():
     if not is_logged():
-        return jsonify({'error': 'No autorizado'}), 401
+        return jsonify({"error": "No autorizado"}), 401
 
     batches = load_batches()
     now = datetime.now()
@@ -634,47 +674,50 @@ def metros_data():
     for hour in range(24):
         metros = 0
         for batch in batches:
-            if batch.get('status') == 'correct':
-                batch_time = datetime.fromisoformat(batch['created_at'])
+            if batch.get("status") == "correct":
+                batch_time = datetime.fromisoformat(batch["created_at"])
                 if batch_time.date() == now.date() and batch_time.hour <= hour:
                     try:
-                        metros += float(batch['to']) - float(batch['from'])
+                        metros += float(batch["to"]) - float(batch["from"])
                     except:
                         pass
 
-        daily_data.append({'hour': hour, 'metros': round(metros, 2)})
+        daily_data.append({"hour": hour, "metros": round(metros, 2)})
 
     monthly_data = []
     for day in range(30):
-        date_point = now - timedelta(days=29-day)
+        date_point = now - timedelta(days=29 - day)
         metros = 0
 
         for batch in batches:
-            if batch.get('status') == 'correct':
-                batch_time = datetime.fromisoformat(batch['created_at'])
+            if batch.get("status") == "correct":
+                batch_time = datetime.fromisoformat(batch["created_at"])
                 if batch_time.date() == date_point.date():
                     try:
-                        metros += float(batch['to']) - float(batch['from'])
+                        metros += float(batch["to"]) - float(batch["from"])
                     except:
                         pass
 
-        monthly_data.append({
-            'day': date_point.strftime('%d/%m'),
-            'metros': round(metros, 2)
-        })
+        monthly_data.append(
+            {"day": date_point.strftime("%d/%m"), "metros": round(metros, 2)}
+        )
 
-    return jsonify({'daily': daily_data, 'monthly': monthly_data})
+    return jsonify({"daily": daily_data, "monthly": monthly_data})
 
-@app.route('/api/metros_total')
+
+@app.route("/api/metros_total")
 def metros_total():
     if not is_logged():
-        return jsonify({'error': 'No autorizado'}), 401
+        return jsonify({"error": "No autorizado"}), 401
 
     total = calculate_metros_escaneados()
-    return jsonify({'total': total})
+    return jsonify({"total": total})
+
+
 # =========================================================
 # MONITOR AUTOMÁTICO SMB
 # =========================================================
+
 
 def start_smb_monitor_interval():
     """Monitor automático que revisa SMB cada 5 minutos."""
@@ -688,13 +731,14 @@ def start_smb_monitor_interval():
 
         time.sleep(300)  # 5 minutos
 
+
 # =========================================================
 # RUN SERVER
 # =========================================================
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Iniciar hilo del monitoreo SMB automático
     monitor_thread = threading.Thread(target=start_smb_monitor_interval, daemon=True)
     monitor_thread.start()
 
-    app.run(host='172.16.11.104', port=5001, debug=True)
+    app.run(host="172.16.11.104", port=5001, debug=True)
