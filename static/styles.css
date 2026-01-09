@@ -141,6 +141,8 @@ table.status-table th {
 /* ================================================
    STATUS ICONS
 ================================================ */
+
+.status-icon {
     font-size: 20px;
     font-weight: bold;
 }
