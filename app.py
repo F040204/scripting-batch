@@ -47,8 +47,8 @@ USERS_FILE = os.environ.get('USERS_FILE', 'users.json')
 BATCHES_FILE = os.environ.get('BATCHES_FILE', 'batches.json')
 SMB_SERVER = os.environ.get('SMB_SERVER', '172.16.11.104')
 SMB_SHARE = os.environ.get('SMB_SHARE', 'pond')
-SMB_USERNAME = os.environ.get('SMB_USERNAME', 'felipe@OrexChile')
-SMB_PASSWORD = os.environ.get('SMB_PASSWORD', 'El.040204')
+SMB_USERNAME = os.environ.get('SMB_USERNAME', '')
+SMB_PASSWORD = os.environ.get('SMB_PASSWORD', '')
 SMB_BASE_PATH = os.environ.get('SMB_BASE_PATH', 'incoming/Orexplore')
 SMB_PATH = f'//{SMB_SERVER}/{SMB_SHARE}/{SMB_BASE_PATH}/'
 
@@ -417,13 +417,13 @@ def leer_orexplore_smb(server=None, share=None, username=None, password=None, ba
                         if depth_file:
                             try:
                                 depth_file.close()
-                            except:
+                            except Exception:
                                 pass
             finally:
                 if hole_dir:
                     try:
                         hole_dir.close()
-                    except:
+                    except Exception:
                         pass
         
         base_dir.close()
@@ -438,17 +438,17 @@ def leer_orexplore_smb(server=None, share=None, username=None, password=None, ba
         if tree:
             try:
                 tree.disconnect()
-            except:
+            except Exception:
                 pass
         if smb_session:
             try:
                 smb_session.disconnect()
-            except:
+            except Exception:
                 pass
         if conn:
             try:
                 conn.disconnect()
-            except:
+            except Exception:
                 pass
     
     return resultados
