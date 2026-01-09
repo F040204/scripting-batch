@@ -104,7 +104,7 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closePreviewModal()">&times;</span>
             <div class="modal-header">Vista Previa</div>
-            <img id="previewImage" src="" style="width: 100%; border-radius: 8px;">
+            <img id="previewImage" src="" class="preview-image">
         </div>
     </div>
 
@@ -122,21 +122,6 @@
     }
 
     cargarMetrosEscaneados();
-    </script>
-    <!-- SCRIPT ICONOS STATUS-->
-
-    </script>
-    let statusIcon = "";
-
-        if (batch.status === "correct") {
-        statusIcon = `<span class="status-icon status-correct">✔</span>`;
-        }
-        else if (batch.status === "incorrect") {
-        statusIcon = `<span class="status-icon status-incorrect">✘</span>`;
-        }
-        else {
-        statusIcon = `<span class="status-icon" style="color: #888;">⏳</span>`;
-        }
     </script>
 </body>
 </html>
