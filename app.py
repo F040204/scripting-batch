@@ -6,12 +6,24 @@ import json
 from pathlib import Path
 import re
 import uuid
+import logging
 import smbprotocol
 from smbprotocol.connection import Connection
 from smbprotocol.session import Session
 from smbprotocol.tree import TreeConnect
 from smbprotocol.open import Open, CreateDisposition
 from smbprotocol.exceptions import SMBException
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('app.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 def smb_connect(server, share, username, password):
     smbprotocol.ClientConfig(username=username, password=password)
@@ -28,12 +40,17 @@ def smb_connect(server, share, username, password):
     return conn, session, tree
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-this-in-production'
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
 
-# Configuración
-USERS_FILE = 'users.json'
-BATCHES_FILE = 'batches.json'
-SMB_PATH = '//172.16.11.104/pond/incoming/orexplore/'
+# Configuración from environment variables
+USERS_FILE = os.environ.get('USERS_FILE', 'users.json')
+BATCHES_FILE = os.environ.get('BATCHES_FILE', 'batches.json')
+SMB_SERVER = os.environ.get('SMB_SERVER', '172.16.11.104')
+SMB_SHARE = os.environ.get('SMB_SHARE', 'pond')
+SMB_USERNAME = os.environ.get('SMB_USERNAME', 'felipe@OrexChile')
+SMB_PASSWORD = os.environ.get('SMB_PASSWORD', 'El.040204')
+SMB_BASE_PATH = os.environ.get('SMB_BASE_PATH', 'incoming/Orexplore')
+SMB_PATH = f'//{SMB_SERVER}/{SMB_SHARE}/{SMB_BASE_PATH}/'
 
 # Inicializar archivos de datos
 def init_data_files():
@@ -278,7 +295,6 @@ def preview_image(batch_number):
     return jsonify({'error': 'Batch no encontrado'}), 404
 
 @app.route('/status_checker')
-@app.route('/status_checker')
 def status_checker():
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -296,8 +312,12 @@ def status_checker_data():
     batches = load_batches()
     batches.reverse()
 
-    # Get SMB data from the server
-    smb_data = leer_orexplore_smb()
+    # Get SMB data from the server with error handling
+    try:
+        smb_data = leer_orexplore_smb()
+    except Exception as e:
+        logger.error(f"Error fetching SMB data: {e}")
+        smb_data = []
 
     # Match batches with SMB data and populate machine_values
     for batch in batches:
@@ -326,58 +346,111 @@ def status_checker_data():
 
 
 # ⚠️ ESTA FUNCIÓN DEBE IR FUERA DE LA RUTA, A NIVEL GLOBAL
-def leer_orexplore_smb(server="172.16.11.104",
-                       share="pond",
-                       username="felipe@OrexChile",
-                       password="El.040204"):
-
-    conn, session, tree = smb_connect(server, share, username, password)
-
-    base = "incoming/Orexplore"
+def leer_orexplore_smb(server=None, share=None, username=None, password=None, base_path=None):
+    """
+    Reads data from Orexplore SMB server with proper error handling.
+    Returns list of batch data or empty list on error.
+    """
+    # Use environment variables as defaults
+    server = server or SMB_SERVER
+    share = share or SMB_SHARE
+    username = username or SMB_USERNAME
+    password = password or SMB_PASSWORD
+    base_path = base_path or SMB_BASE_PATH
+    
     resultados = []
-
-    base_dir = Open(tree, base)
-    base_dir.create(CreateDisposition.FILE_OPEN)
-
-    for info in base_dir.query_directory("*"):
-        hole_id = info.file_name
-        hole_path = f"{base}/{hole_id}"
-
-        if "." in hole_id:
-            continue
-
-        try:
-            hole_dir = Open(tree, hole_path)
-            hole_dir.create(CreateDisposition.FILE_OPEN)
-        except SMBException:
-            continue
-
-        for batch_info in hole_dir.query_directory("*"):
-            batch_folder = batch_info.file_name
-
-            if not batch_folder.startswith("batch-"):
+    conn = None
+    smb_session = None
+    tree = None
+    
+    try:
+        logger.info(f"Connecting to SMB server: {server}")
+        conn, smb_session, tree = smb_connect(server, share, username, password)
+        
+        base_dir = Open(tree, base_path)
+        base_dir.create(CreateDisposition.FILE_OPEN)
+        
+        for info in base_dir.query_directory("*"):
+            hole_id = info.file_name
+            hole_path = f"{base_path}/{hole_id}"
+            
+            if "." in hole_id:
                 continue
-
-            M_to = batch_folder.replace("batch-", "")
-            batch_path = f"{hole_path}/{batch_folder}"
-
-            depth_path = f"{batch_path}/depth.txt"
-
+            
+            hole_dir = None
             try:
-                depth_file = Open(tree, depth_path)
-                depth_file.create(CreateDisposition.FILE_OPEN)
-                raw = depth_file.read(0, 2048).decode("utf-8")
-                M_from = raw.splitlines()[0].strip()
-                depth_file.close()
-            except SMBException:
+                hole_dir = Open(tree, hole_path)
+                hole_dir.create(CreateDisposition.FILE_OPEN)
+            except SMBException as e:
+                logger.warning(f"Could not open hole directory {hole_id}: {e}")
                 continue
-
-            resultados.append({
-                "M_hole_id": hole_id,
-                "M_from": M_from,
-                "M_to": M_to,
-                "M_machine": None
-            })
+            
+            try:
+                for batch_info in hole_dir.query_directory("*"):
+                    batch_folder = batch_info.file_name
+                    
+                    if not batch_folder.startswith("batch-"):
+                        continue
+                    
+                    M_to = batch_folder.replace("batch-", "")
+                    batch_path = f"{hole_path}/{batch_folder}"
+                    depth_path = f"{batch_path}/depth.txt"
+                    
+                    depth_file = None
+                    try:
+                        depth_file = Open(tree, depth_path)
+                        depth_file.create(CreateDisposition.FILE_OPEN)
+                        raw = depth_file.read(0, 2048).decode("utf-8")
+                        M_from = raw.splitlines()[0].strip()
+                        
+                        resultados.append({
+                            "M_hole_id": hole_id,
+                            "M_from": M_from,
+                            "M_to": M_to,
+                            "M_machine": None
+                        })
+                    except SMBException as e:
+                        logger.warning(f"Could not read depth file for {hole_id}/{batch_folder}: {e}")
+                    except (IndexError, ValueError) as e:
+                        logger.warning(f"Invalid depth file format for {hole_id}/{batch_folder}: {e}")
+                    finally:
+                        if depth_file:
+                            try:
+                                depth_file.close()
+                            except:
+                                pass
+            finally:
+                if hole_dir:
+                    try:
+                        hole_dir.close()
+                    except:
+                        pass
+        
+        base_dir.close()
+        logger.info(f"Successfully read {len(resultados)} batches from SMB server")
+        
+    except SMBException as e:
+        logger.error(f"SMB connection error: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error reading from SMB: {e}")
+    finally:
+        # Clean up connections
+        if tree:
+            try:
+                tree.disconnect()
+            except:
+                pass
+        if smb_session:
+            try:
+                smb_session.disconnect()
+            except:
+                pass
+        if conn:
+            try:
+                conn.disconnect()
+            except:
+                pass
+    
     return resultados
 
 @app.route('/metros')
@@ -438,6 +511,45 @@ def metros_data():
         'daily': daily_data,
         'monthly': monthly_data
     })
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint to verify app and SMB connectivity status."""
+    status = {
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'services': {}
+    }
+    
+    # Check database files
+    try:
+        batches = load_batches()
+        status['services']['database'] = {
+            'status': 'ok',
+            'batches_count': len(batches)
+        }
+    except Exception as e:
+        status['status'] = 'degraded'
+        status['services']['database'] = {
+            'status': 'error',
+            'error': str(e)
+        }
+    
+    # Check SMB connectivity
+    try:
+        smb_data = leer_orexplore_smb()
+        status['services']['smb'] = {
+            'status': 'ok',
+            'batches_found': len(smb_data)
+        }
+    except Exception as e:
+        status['status'] = 'degraded'
+        status['services']['smb'] = {
+            'status': 'error',
+            'error': str(e)
+        }
+    
+    return jsonify(status)
 
 if __name__ == '__main__':
     app.run(host='172.16.11.151', port=5001, debug=True)
