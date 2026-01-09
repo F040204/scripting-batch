@@ -29,6 +29,9 @@ ENV/
 instance/
 .webassets-cache
 .env
+# Flask
+instance/
+.webassets-cache
 
 # IDEs
 .vscode/
