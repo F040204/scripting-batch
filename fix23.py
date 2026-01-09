@@ -466,9 +466,6 @@ def status_checker_data():
         except (TypeError, ValueError):
             return None
 
-        # unreachable safeguard
-        return None
-
     for batch in batches:
         match = next(
             (
