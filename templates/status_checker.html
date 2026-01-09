@@ -111,21 +111,27 @@ const machineFrom = mv.from ?? "-";
 const machineTo = mv.to ?? "-";
 const machineMachine = mv.machine ?? "-";
 
+// Compare values and add error class if different
+const holeMatch = machineHole === "-" || batch.hole_id === machineHole;
+const fromMatch = machineFrom === "-" || String(batch.from) === String(machineFrom);
+const toMatch = machineTo === "-" || String(batch.to) === String(machineTo);
+const machineMatch = machineMachine === "-" || batch.machine === machineMachine;
+
 const row = document.createElement("tr");
 row.innerHTML = `
     <td>${batch.batch_number}</td>
 
     <!-- INGRESADO EN OP -->
-    <td>${batch.hole_id}</td>
-    <td>${batch.from}</td>
-    <td>${batch.to}</td>
-    <td>${batch.machine}</td>
+    <td class="${!holeMatch ? 'error-text' : ''}">${batch.hole_id}</td>
+    <td class="${!fromMatch ? 'error-text' : ''}">${batch.from}</td>
+    <td class="${!toMatch ? 'error-text' : ''}">${batch.to}</td>
+    <td class="${!machineMatch ? 'error-text' : ''}">${batch.machine}</td>
 
     <!-- INGRESADO EN MÁQUINA (SMB) -->
-    <td>${machineHole}</td>
-    <td>${machineFrom}</td>
-    <td>${machineTo}</td>
-    <td>${machineMachine}</td>
+    <td class="${!holeMatch ? 'error-text' : ''}">${machineHole}</td>
+    <td class="${!fromMatch ? 'error-text' : ''}">${machineFrom}</td>
+    <td class="${!toMatch ? 'error-text' : ''}">${machineTo}</td>
+    <td class="${!machineMatch ? 'error-text' : ''}">${machineMachine}</td>
 
     <td>
         <button class="btn btn-sm btn-primary"

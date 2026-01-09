@@ -231,6 +231,30 @@ def delete_batch(batch_number):
 
     return jsonify({'success': True})
 
+@app.route('/api/batches/<int:batch_number>', methods=['PUT'])
+def update_batch(batch_number):
+    if 'username' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+
+    data = request.json
+    batches = load_batches()
+    
+    batch = next((b for b in batches if b['batch_number'] == batch_number), None)
+    
+    if not batch:
+        return jsonify({'error': 'Batch no encontrado'}), 404
+    
+    # Update batch fields
+    batch['hole_id'] = data.get('hole_id', batch['hole_id'])
+    batch['from'] = data.get('from', batch['from'])
+    batch['to'] = data.get('to', batch['to'])
+    batch['machine'] = data.get('machine', batch['machine'])
+    batch['comentarios'] = data.get('comentarios', batch.get('comentarios', ''))
+    
+    save_batches(batches)
+    
+    return jsonify({'success': True, 'batch': batch})
+
 @app.route('/api/metros_escaneados')
 def metros_escaneados_api():
     if 'username' not in session:
@@ -272,26 +296,37 @@ def status_checker_data():
     batches = load_batches()
     batches.reverse()
 
-    # Aquí NO va ninguna función definida
-    # Aquí solo ejecutamos lógica
-    smb_data = leer_orexplore_smb()   # <-- llamamos la función correctamente
+    # Get SMB data from the server
+    smb_data = leer_orexplore_smb()
 
-    # ejemplo de integración (ajusta según tu lógica)
+    # Match batches with SMB data and populate machine_values
     for batch in batches:
+        batch["machine_values"] = None
         for smb in smb_data:
             if smb["M_hole_id"] == batch["hole_id"]:
                 batch["machine_values"] = {
-                    "M_hole_id": smb["M_hole_id"],
-                    "M_from": smb["M_from"],
-                    "M_to": smb["M_to"],
-                    "M_machine": batch["machine"]
+                    "hole_id": smb["M_hole_id"],
+                    "from": smb["M_from"],
+                    "to": smb["M_to"],
+                    "machine": smb["M_machine"] or "OREXPLORE"
                 }
+                break
 
-    return jsonify(batches[(page-1)*per_page: page*per_page])
+    start = (page - 1) * per_page
+    end = start + per_page
+    
+    paginated_batches = batches[start:end]
+    total_pages = (len(batches) + per_page - 1) // per_page
+    
+    return jsonify({
+        'batches': paginated_batches,
+        'total_pages': total_pages,
+        'current_page': page
+    })
 
 
 # ⚠️ ESTA FUNCIÓN DEBE IR FUERA DE LA RUTA, A NIVEL GLOBAL
-def leer_orexplore_smb(server="17.16.11.104",
+def leer_orexplore_smb(server="172.16.11.104",
                        share="pond",
                        username="felipe@OrexChile",
                        password="El.040204"):
@@ -344,25 +379,6 @@ def leer_orexplore_smb(server="17.16.11.104",
                 "M_machine": None
             })
     return resultados
-    for batch in batches:
-        batch['machine_values'] = {
-            'hole_id': batch['hole_id'],
-            'from': smb['M_from'],
-            'to': smb['M_to'],
-            'machine': batch['machine']
-        }
-    
-    start = (page - 1) * per_page
-    end = start + per_page
-    
-    paginated_batches = batches[start:end]
-    total_pages = (len(batches) + per_page - 1) // per_page
-    
-    return jsonify({
-        'batches': paginated_batches,
-        'total_pages': total_pages,
-        'current_page': page
-    })
 
 @app.route('/metros')
 def metros():
