@@ -1,0 +1,577 @@
+/* ================================================
+   GENERAL
+================================================ */
+
+body {
+    background-color: #f4f6fa;
+    font-family: "Segoe UI", Roboto, sans-serif;
+    color: #333;
+}
+
+h2 {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+button {
+    cursor: pointer !important;
+}
+
+
+
+/* ================================================
+   TABLE STYLING
+================================================ */
+
+.table-container {
+    margin-top: 20px;
+}
+
+table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table.data-table th {
+    background: #1a1f36;
+    color: white;
+    padding: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+table.data-table td {
+    padding: 10px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e2e2;
+    text-align: center;
+    font-size: 14px;
+}
+
+table.data-table tr:hover td {
+    background-color: #f0f4ff;
+}
+
+
+
+/* ================================================
+   STATUS ICONS
+================================================ */
+
+.status-icon {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.status-correct {
+    color: #2ecc71;
+}
+
+.status-incorrect {
+    color: #e74c3c;
+}  
+.status-pending{
+    color:#888
+}
+BUTTONS
+================================================ */
+
+.btn-small {
+    padding: 4px 10px;
+    font-size: 13px;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn-secondary {
+    background-color: #d0d5dd !important;
+    border: none !important;
+    color: #1a1f36 !important;
+}
+
+.btn-secondary:hover {
+    background-color: #ccd2e0 !important;
+}
+
+.btn-primary {
+    background-color: #1d6cf2 !important;
+    border: none !important;
+}
+
+.btn-primary:hover {
+    background-color: #1554b8 !important;
+}
+
+
+
+/* ================================================
+   PAGINATION
+================================================ */
+
+#pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#pagination button {
+    margin: 4px;
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+
+
+/* ================================================
+   MODAL BASE
+================================================ */
+
+.modal-custom {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;           /* ✔ Centra vertical */
+    left: 50%;          /* ✔ Centra horizontal */
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    width: 440px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.35);
+    cursor: grab;
+}
+
+
+.modal-content img {
+    border-radius: 8px;
+}
+
+
+
+/* ================================================
+   MODAL HEADER
+================================================ */
+
+.modal-header {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #1a1f36;
+}
+
+.close-btn {
+    float: right;
+    font-size: 26px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #777;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+
+
+/* ================================================
+   FORM INPUTS
+================================================ */
+
+.form-control {
+    border-radius: 6px !important;
+}
+
+textarea.form-control {
+    resize: none;
+}
+
+
+/* ================================================
+   PREVIEW MODAL OVERRIDE
+================================================ */
+
+#previewModal .modal-content {
+    width: 600px !important;
+}
+
+
+
+/* ================================================
+   ANIMACIONES SUAVES
+================================================ */
+
+.modal-content {
+    animation: fadeInScale 0.25s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.85);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+
+
+
+/* ================================================
+   BUTTONS
+================================================ */
+
+.btn-small {
+    padding: 4px 10px;
+    font-size: 13px;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn-secondary {
+    background-color: #d0d5dd !important;
+    border: none !important;
+    color: #1a1f36 !important;
+}
+
+.btn-secondary:hover {
+    background-color: #ccd2e0 !important;
+}
+
+.btn-primary {
+    background-color: #1d6cf2 !important;
+    border: none !important;
+}
+
+.btn-primary:hover {
+    background-color: #1554b8 !important;
+}
+
+
+
+/* ================================================
+   PAGINATION
+================================================ */
+
+#pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#pagination button {
+    margin: 4px;
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+
+
+/* ================================================
+   MODAL BASE
+================================================ */
+
+.modal-custom {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+    position: absolute;
+    background: #ffffff;
+    width: 440px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.35)
+    transform: translate(-50%, -50%);
+}
+
+.modal-content img {
+    border-radius: 8px;
+}
+
+
+
+/* ================================================
+   MODAL HEADER
+================================================ */
+
+.modal-header {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #1a1f36;
+}
+
+.close-btn {
+    float: right;
+    font-size: 26px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #777;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+
+
+/* ================================================
+   FORM INPUTS
+================================================ */
+
+.form-control {
+    border-radius: 6px !important;
+}
+
+textarea.form-control {
+    resize: none;
+}
+
+
+/* ================================================
+   PREVIEW MODAL OVERRIDE
+================================================ */
+
+#previewModal .modal-content {
+    width: 600px !important;
+}
+
+
+
+/* ================================================
+   ANIMACIONES SUAVES
+================================================ */
+
+.modal-content {
+    animation: fadeInScale 0.25s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.85);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+/* ============================================================
+   STATUS CHECKER
+   Mismo look & feel que index
+   ============================================================ */
+
+.status-checker-container {
+    max-width: 1400px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+
+.status-checker-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+/* Tabla */
+.status-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    background-color: #111;
+}
+
+.status-table thead {
+    background-color: #2a2a2a;
+}
+
+.status-table th,
+.status-table td {
+    padding: 10px 12px;
+    border: 1px solid #333;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.status-table th {
+    color: #e0e0e0;
+    font-weight: 600;
+}
+
+.status-table td {
+    color: #ccc;
+}
+
+/* Separadores visuales OP vs Máquina */
+.status-table td.machine,
+.status-table th.machine {
+    background-color: #181818;
+}
+
+/* Estados */
+.status-ok {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.status-warning {
+    color: #FFC107;
+    font-weight: bold;
+}
+
+.status-error {
+    color: #F44336;
+    font-weight: bold;
+}
+
+/* Botones */
+.status-table button {
+    background-color: #3a3a3a;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.status-table button:hover {
+    background-color: #555;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .status-table {
+        font-size: 0.8rem;
+    }
+}
+/* ================================================
+   STATUS CHECKER – ESTILOS ESPECÍFICOS
+================================================ */
+
+/* Header superior */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1f36;
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+/* Tabla Status Checker */
+.status-table th {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-table thead tr:first-child th {
+    background: #0f172a; /* más oscuro */
+}
+
+.status-table thead tr:nth-child(2) th {
+    background: #1e293b;
+    font-weight: 500;
+}
+
+/* Separación visual OP vs Máquina */
+.status-table td:nth-child(1),
+.status-table th:nth-child(1) {
+    background: #f8fafc;
+    font-weight: bold;
+}
+
+.status-table td:nth-child(6),
+.status-table th:nth-child(6) {
+    border-left: 3px solid #c7d2fe;
+}
+
+/* Diferencias detectadas */
+.error-text {
+    color: #e11d48;
+    font-weight: 600;
+    background-color: #fff1f2;
+}
+
+/* Filas hover más claras */
+.status-table tr:hover td {
+    background-color: #eef2ff !important;
+}
+
+/* Botón editar */
+.status-table .btn-small {
+    background-color: #6366f1;
+    color: white;
+    border: none;
+}
+
+.status-table .btn-small:hover {
+    background-color: #4f46e5;
+}
+
+/* Paginación específica */
+#pagination button {
+    min-width: 38px;
+}
+
+/* Modal edición (ligero ajuste visual) */
+#editModal .modal-content {
+    border-top: 6px solid #6366f1;
+}
+
+#editModal label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+}

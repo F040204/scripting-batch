@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Checker - Portal de Operaciones</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Status Checker</h1>
+        <div class="user-info">
+            <div>Usuario: <strong>{{ username }}</strong></div>
+            <a href="/index/" class="btn btn-secondary">Volver</a>
+            <a href="/logout" class="btn btn-secondary">Cerrar Sesión</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="table-container">
+            <table class="data-table status-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Batch N°</th>
+                        <th colspan="4">Ingresado en OP</th>
+                        <th colspan="4">Ingresado en Máquina</th>
+                        <th rowspan="2">Edit</th>
+                    </tr>
+                    <tr>
+                        <th>Hole ID</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Machine</th>
+                        <th>Hole ID</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Machine</th>
+                    </tr>
+                </thead>
+                <tbody id="statusTable">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination" id="pagination">
+        </div>
+    </div>
+
+        <!-- ===========================
+        MODAL EDITAR BATCH
+        =========================== -->
+        <div id="editModal" class="modal-custom">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeEditModal()">&times;</span>
+                <div class="modal-header">Editar Batch</div>
+
+                <form id="editBatchForm">
+                    <input type="hidden" id="editBatchNumber">
+
+                    <div class="mb-2">
+                        <label>Hole ID</label>
+                        <input id="editHoleId" class="form-control" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>From</label>
+                        <input type="number" id="editFrom" class="form-control" step="0.01" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>To</label>
+                        <input type="number" id="editTo" class="form-control" step="0.01" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Machine</label>
+                        <input id="editMachine" class="form-control" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Comentarios</label>
+                        <textarea id="editComentarios" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <button class="btn btn-primary w-100" type="submit">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    <script>
+        let currentPage = 1;
+
+        async function loadStatusData(page = 1) {
+            const response = await fetch(`/api/status_checker_data?page=${page}`);
+            const data = await response.json();
+
+            const tbody = document.getElementById('statusTable');
+            tbody.innerHTML = '';
+
+data.batches.forEach(batch => {
+
+    // PROTECCIÓN CRÍTICA
+    const mv = batch.machine_values || {
+        hole_id: "-",
+        from: "-",
+        to: "-",
+        machine: "-"
+    };
+
+const machineHole = mv.hole_id ?? "-";
+const machineFrom = mv.from ?? "-";
+const machineTo = mv.to ?? "-";
+const machineMachine = mv.machine ?? "-";
+
+const row = document.createElement("tr");
+row.innerHTML = `
+    <td>${batch.batch_number}</td>
+
+    <!-- INGRESADO EN OP -->
+    <td>${batch.hole_id}</td>
+    <td>${batch.from}</td>
+    <td>${batch.to}</td>
+    <td>${batch.machine}</td>
+
+    <!-- INGRESADO EN MÁQUINA (SMB) -->
+    <td>${machineHole}</td>
+    <td>${machineFrom}</td>
+    <td>${machineTo}</td>
+    <td>${machineMachine}</td>
+
+    <td>
+        <button class="btn btn-sm btn-primary"
+            onclick="editBatch(${batch.batch_number})">
+            ✏️
+        </button>
+    </td>
+`;
+
+    document.getElementById("statusTable").appendChild(row);
+});
+
+
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+            
+            for (let i = 1; i <= data.total_pages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.className = i === page ? 'btn btn-primary' : 'btn btn-secondary';
+                button.onclick = () => loadStatusData(i);
+                pagination.appendChild(button);
+            }
+
+            currentPage = page;
+        }
+
+        async function editBatch(batchNumber) {
+    const response = await fetch(`/api/status_checker_data?page=${currentPage}`);
+    const data = await response.json();
+    const batch = data.batches.find(b => b.batch_number === batchNumber);
+
+    if (!batch) {
+        alert("Batch no encontrado");
+        return;
+    }
+
+    document.getElementById("editBatchNumber").value = batch.batch_number;
+    document.getElementById("editHoleId").value = batch.hole_id;
+    document.getElementById("editFrom").value = batch.from;
+    document.getElementById("editTo").value = batch.to;
+    document.getElementById("editMachine").value = batch.machine;
+    document.getElementById("editComentarios").value = batch.comentarios || "";
+
+    document.getElementById("editModal").style.display = "block";
+    }
+
+
+  
+        function closeEditModal() {
+    document.getElementById("editModal").style.display = "none";
+}
+
+document.getElementById("editBatchForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const batchNumber = document.getElementById("editBatchNumber").value;
+
+    const payload = {
+        hole_id: document.getElementById("editHoleId").value,
+        from: document.getElementById("editFrom").value,
+        to: document.getElementById("editTo").value,
+        machine: document.getElementById("editMachine").value,
+        comentarios: document.getElementById("editComentarios").value
+    };
+
+    const response = await fetch(`/api/batches/${batchNumber}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+        closeEditModal();
+        loadStatusData(currentPage);
+    } else {
+        alert("Error al guardar cambios");
+    }
+});
+      loadStatusData()
+    </script>
+</body>
+</html>

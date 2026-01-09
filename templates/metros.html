@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metros Escaneados - Portal de Operaciones</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Metros Escaneados</h1>
+        <div class="user-info">
+            <div>Usuario: <strong>{{ username }}</strong></div>
+            <a href="/index/" class="btn btn-secondary">Volver</a>
+            <a href="/logout" class="btn btn-secondary">Cerrar Sesión</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="charts-container">
+            <div class="chart-box">
+                <h2>Metros Escaneados - Hoy</h2>
+                <canvas id="dailyChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h2>Metros Escaneados - Últimos 30 Días</h2>
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadMetrosData() {
+            const response = await fetch('/api/metros_data');
+            const data = await response.json();
+
+            const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+            new Chart(dailyCtx, {
+                type: 'line',
+                data: {
+                    labels: data.daily.map(d => `${d.hour}:00`),
+                    datasets: [{
+                        label: 'Metros Escaneados',
+                        data: data.daily.map(d => d.metros),
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Metros'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Hora'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.monthly.map(d => d.day),
+                    datasets: [{
+                        label: 'Metros Escaneados',
+                        data: data.monthly.map(d => d.metros),
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgb(54, 162, 235)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Metros'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Día'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        loadMetrosData();
+    </script>
+</body>
+</html>

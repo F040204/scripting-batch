@@ -1,0 +1,38 @@
+[
+    {
+        "batch_number": 1,
+        "hole_id": "GFSN_365",
+        "from": "0",
+        "to": "0.15",
+        "machine": "M4",
+        "comentarios": "",
+        "status": "in_progress",
+        "created_at": "2025-12-17T19:31:43.675674",
+        "op_hole_id": "GFSN_365",
+        "op_from": "0",
+        "op_to": "0.15",
+        "op_machine": "M4",
+        "machine_hole_id": "GFSN_365",
+        "machine_from": "-",
+        "machine_to": "0.15",
+        "machine_machine": "OREXPLORE"
+    },
+    {
+        "batch_number": 2,
+        "hole_id": "GFSN_075",
+        "from": "1",
+        "to": "2",
+        "machine": "M4",
+        "comentarios": "",
+        "status": "in_progress",
+        "created_at": "2025-12-30T13:20:24.537369",
+        "op_hole_id": "GFSN_075",
+        "op_from": "1",
+        "op_to": "2",
+        "op_machine": "M4",
+        "machine_hole_id": "GFSN_075",
+        "machine_to": "2",
+        "machine_from": "-",
+        "machine_machine": "OREXPLORE"
+    }
+]
