@@ -151,9 +151,10 @@ table.status-table th {
 
 .status-incorrect {
     color: #e74c3c;
-}  
-.status-pending{
-    color:#888;
+}
+
+.status-pending {
+    color: #888;
 }
 
 /* ================================================
