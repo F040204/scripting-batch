@@ -20,7 +20,7 @@ button {
 
 
 /* ================================================
-   TABLE STYLING
+   TABLE STYLING - BASE
 ================================================ */
 
 .table-container {
@@ -31,7 +31,9 @@ button {
     background: white;
 }
 
-table.data-table {
+/* Shared base table styling */
+table.data-table,
+table.status-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
@@ -40,7 +42,8 @@ table.data-table {
     overflow: hidden;
 }
 
-table.data-table th {
+table.data-table th,
+table.status-table th {
     background: linear-gradient(135deg, #1a1f36 0%, #2d3548 100%);
     color: white;
     padding: 14px 16px;
@@ -52,33 +55,92 @@ table.data-table th {
     border-bottom: 2px solid #4a5568;
 }
 
-table.data-table td {
+table.data-table td,
+table.status-table td {
     padding: 12px 16px;
     background: #ffffff;
     border-bottom: 1px solid #e8ecf1;
     text-align: center;
     font-size: 14px;
     color: #374151;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
-table.data-table tbody tr:last-child td {
+table.data-table tbody tr:last-child td,
+table.status-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-table.data-table tr:hover td {
+table.data-table tr:hover td,
+table.status-table tr:hover td {
     background-color: #f8fafc;
-    transform: scale(1.001);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Specific border styling for status table */
+table.status-table th,
+table.status-table td {
+    border: 1px solid #e8ecf1;
+    white-space: nowrap;
+}
+
+table.status-table th {
+    border-color: #4a5568;
 }
 
 
 
 /* ================================================
-   STATUS ICONS
+   PAGE HEADER
 ================================================ */
 
-.status-icon {
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    padding: 18px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+    border: 1px solid #e8ecf1;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-weight: 600;
+}
+
+/* ================================================
+   ALERTS AND INFO BOXES
+================================================ */
+
+.alert-info-custom {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #93c5fd;
+    border-radius: 10px;
+    color: #1e40af;
+    font-weight: 500;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+}
+
+.alert-info-custom strong {
+    font-size: 18px;
+    color: #1e3a8a;
+}
+
+/* ================================================
+   CONTAINER
+================================================ */
+
+.container-custom {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ================================================
+   STATUS ICONS
+================================================ */
     font-size: 20px;
     font-weight: bold;
 }
@@ -321,8 +383,7 @@ textarea.form-control {
 
 
 /* ============================================================
-   STATUS CHECKER
-   Professional table styling
+   STATUS CHECKER - ADDITIONAL STYLES
    ============================================================ */
 
 .status-checker-container {
@@ -339,45 +400,6 @@ textarea.form-control {
     font-weight: 600;
     margin-bottom: 20px;
     color: #1a1f36;
-}
-
-/* Status Table - Professional Design */
-.status-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size: 0.9rem;
-    background-color: #ffffff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.status-table thead {
-    background: linear-gradient(135deg, #1a1f36 0%, #2d3548 100%);
-}
-
-.status-table th,
-.status-table td {
-    padding: 12px 14px;
-    border: 1px solid #e8ecf1;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.status-table th {
-    color: #ffffff;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 12px;
-    border-color: #4a5568;
-}
-
-.status-table td {
-    color: #374151;
-    background-color: #ffffff;
-    transition: all 0.2s ease;
 }
 
 /* Visual separator for OP vs Machine columns */
@@ -415,14 +437,13 @@ textarea.form-control {
     border: 1px solid #fecaca !important;
 }
 
-/* Hover effects */
+/* Enhanced hover effect without scale transform */
 .status-table tbody tr:hover td {
     background-color: #f0f9ff !important;
-    transform: scale(1.001);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 0 0 1px #bfdbfe;
 }
 
-/* Buttons within table */
+/* Buttons within status table */
 .status-table button {
     background-color: #6366f1;
     color: #fff;
