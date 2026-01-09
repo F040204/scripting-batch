@@ -22,6 +22,10 @@ Edit `.env` and set your actual values:
 # Flask Configuration
 SECRET_KEY=your-actual-secret-key-here
 
+# Admin User Configuration (optional)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your-secure-admin-password
+
 # SMB Server Configuration
 SMB_SERVER=172.16.11.104
 SMB_SHARE=pond
@@ -31,6 +35,8 @@ SMB_BASE_PATH=incoming/Orexplore
 ```
 
 **Important:** Never commit the `.env` file to version control. It's already in `.gitignore`.
+
+**Admin User:** If you set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in the `.env` file, an admin user will be automatically created on first startup. The password is securely hashed and never stored in plain text.
 
 ### 3. Run the Application
 

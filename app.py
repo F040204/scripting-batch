@@ -61,6 +61,18 @@ def init_data_files():
                 'created_at': datetime.now().isoformat()
             }
         }
+        
+        # Add admin user from environment variables if provided
+        admin_username = os.environ.get('ADMIN_USERNAME')
+        admin_password = os.environ.get('ADMIN_PASSWORD')
+        
+        if admin_username and admin_password:
+            users[admin_username] = {
+                'password': generate_password_hash(admin_password),
+                'created_at': datetime.now().isoformat()
+            }
+            logger.info(f"Admin user '{admin_username}' created from environment variables")
+        
         with open(USERS_FILE, 'w') as f:
             json.dump(users, f, indent=4)
     
