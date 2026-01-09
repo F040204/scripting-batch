@@ -29,7 +29,6 @@ ENV/
 instance/
 .webassets-cache
 .env
-*.log
 
 # IDEs
 .vscode/
@@ -41,3 +40,6 @@ instance/
 # OS
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
