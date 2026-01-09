@@ -103,7 +103,7 @@
                         statusDiv.style.backgroundColor = '#d4edda';
                         statusDiv.style.color = '#155724';
                         statusDiv.style.border = '1px solid #c3e6cb';
-                        statusDiv.innerHTML = `✓ Conexión SMB: Activa (${health.services.smb.batches_found || 0} batches encontrados en servidor)`;
+                        statusDiv.innerHTML = `✓ Conexión SMB: Activa (${health.services.smb.batches_found || 0} lotes encontrados en servidor)`;
                     } else {
                         statusDiv.style.backgroundColor = '#f8d7da';
                         statusDiv.style.color = '#721c24';
@@ -249,11 +249,12 @@ document.getElementById("editBatchForm").addEventListener("submit", async (e) =>
         alert("Error al guardar cambios");
     }
 });
-      // Initialize page
-      checkSMBStatus();
-      loadStatusData();
-      // Refresh SMB status every 30 seconds
-      setInterval(checkSMBStatus, 30000);
+
+        // Initialize page
+        checkSMBStatus();
+        loadStatusData();
+        // Refresh SMB status every 30 seconds
+        setInterval(checkSMBStatus, 30000);
     </script>
 </body>
 </html>
