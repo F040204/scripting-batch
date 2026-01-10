@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="header">
+    <div class="header page-header">
         <h1>Status Checker</h1>
         <div class="user-info">
             <div>Usuario: <strong>{{ username }}</strong></div>
@@ -16,8 +16,8 @@
         </div>
     </div>
 
-    <div class="container">
-        <div id="smbStatus" style="padding: 10px; margin-bottom: 15px; border-radius: 5px; font-weight: bold; text-align: center;">
+    <div class="container container-custom">
+        <div id="smbStatus" class="smb-status">
             Verificando conexión SMB...
         </div>
         <div class="table-container">

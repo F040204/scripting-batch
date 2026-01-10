@@ -20,42 +20,144 @@ button {
 
 
 /* ================================================
-   TABLE STYLING
+   TABLE STYLING - BASE
 ================================================ */
 
 .table-container {
     margin-top: 20px;
+    overflow-x: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background: white;
 }
 
-table.data-table {
+/* Shared base table styling */
+table.data-table,
+table.status-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     background: white;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
 }
 
-table.data-table th {
-    background: #1a1f36;
+table.data-table th,
+table.status-table th {
+    background: linear-gradient(135deg, #1a1f36 0%, #2d3548 100%);
     color: white;
-    padding: 12px;
+    padding: 14px 16px;
     font-weight: 600;
     text-align: center;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #4a5568;
 }
 
-table.data-table td {
-    padding: 10px;
+table.data-table td,
+table.status-table td {
+    padding: 12px 16px;
     background: #ffffff;
-    border-bottom: 1px solid #e2e2e2;
+    border-bottom: 1px solid #e8ecf1;
     text-align: center;
     font-size: 14px;
+    color: #374151;
+    transition: background-color 0.2s ease;
 }
 
-table.data-table tr:hover td {
-    background-color: #f0f4ff;
+table.data-table tbody tr:last-child td,
+table.status-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+table.data-table tr:hover td,
+table.status-table tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* Specific border styling for status table */
+table.status-table th,
+table.status-table td {
+    border: 1px solid #e8ecf1;
+    white-space: nowrap;
+}
+
+table.status-table th {
+    border-color: #4a5568;
 }
 
 
+
+/* ================================================
+   PAGE HEADER
+================================================ */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    padding: 18px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+    border: 1px solid #e8ecf1;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-weight: 600;
+}
+
+/* ================================================
+   ALERTS AND INFO BOXES
+================================================ */
+
+.alert-info-custom {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #93c5fd;
+    border-radius: 10px;
+    color: #1e40af;
+    font-weight: 500;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+}
+
+.alert-info-custom strong {
+    font-size: 18px;
+    color: #1e3a8a;
+}
+
+/* ================================================
+   CONTAINER
+================================================ */
+
+.container-custom {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ================================================
+   PREVIEW IMAGE
+================================================ */
+
+.preview-image {
+    width: 100%;
+    border-radius: 8px;
+}
+
+/* ================================================
+   SMB STATUS BOX
+================================================ */
+
+.smb-status {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+}
 
 /* ================================================
    STATUS ICONS
@@ -72,222 +174,85 @@ table.data-table tr:hover td {
 
 .status-incorrect {
     color: #e74c3c;
-}  
-.status-pending{
-    color:#888
-}
-BUTTONS
-================================================ */
-
-.btn-small {
-    padding: 4px 10px;
-    font-size: 13px;
 }
 
-.btn-danger {
-    background-color: #e74c3c;
-    border: none;
+.status-pending {
+    color: #888;
 }
-
-.btn-danger:hover {
-    background-color: #c0392b;
-}
-
-.btn-secondary {
-    background-color: #d0d5dd !important;
-    border: none !important;
-    color: #1a1f36 !important;
-}
-
-.btn-secondary:hover {
-    background-color: #ccd2e0 !important;
-}
-
-.btn-primary {
-    background-color: #1d6cf2 !important;
-    border: none !important;
-}
-
-.btn-primary:hover {
-    background-color: #1554b8 !important;
-}
-
-
-
-/* ================================================
-   PAGINATION
-================================================ */
-
-#pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-#pagination button {
-    margin: 4px;
-    padding: 6px 12px;
-    border-radius: 5px;
-}
-
-
-
-/* ================================================
-   MODAL BASE
-================================================ */
-
-.modal-custom {
-    display: none;
-    position: fixed;
-    z-index: 2000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-}
-
-.modal-content {
-    position: absolute;
-    top: 50%;           /* ✔ Centra vertical */
-    left: 50%;          /* ✔ Centra horizontal */
-    transform: translate(-50%, -50%);
-    background: #ffffff;
-    width: 440px;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 0 25px rgba(0,0,0,0.35);
-    cursor: grab;
-}
-
-
-.modal-content img {
-    border-radius: 8px;
-}
-
-
-
-/* ================================================
-   MODAL HEADER
-================================================ */
-
-.modal-header {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #1a1f36;
-}
-
-.close-btn {
-    float: right;
-    font-size: 26px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #777;
-}
-
-.close-btn:hover {
-    color: #000;
-}
-
-
-
-/* ================================================
-   FORM INPUTS
-================================================ */
-
-.form-control {
-    border-radius: 6px !important;
-}
-
-textarea.form-control {
-    resize: none;
-}
-
-
-/* ================================================
-   PREVIEW MODAL OVERRIDE
-================================================ */
-
-#previewModal .modal-content {
-    width: 600px !important;
-}
-
-
-
-/* ================================================
-   ANIMACIONES SUAVES
-================================================ */
-
-.modal-content {
-    animation: fadeInScale 0.25s ease-out;
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.85);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
-}
-
-
-
 
 /* ================================================
    BUTTONS
 ================================================ */
 
 .btn-small {
-    padding: 4px 10px;
+    padding: 6px 12px;
     font-size: 13px;
+    border-radius: 6px;
+    font-weight: 500;
 }
 
 .btn-danger {
-    background-color: #e74c3c;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     border: none;
+    transition: all 0.2s ease;
 }
 
 .btn-danger:hover {
-    background-color: #c0392b;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .btn-secondary {
-    background-color: #d0d5dd !important;
-    border: none !important;
-    color: #1a1f36 !important;
+    background-color: #e8ecf1 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+    transition: all 0.2s ease;
 }
 
 .btn-secondary:hover {
-    background-color: #ccd2e0 !important;
+    background-color: #cbd5e1 !important;
+    border-color: #94a3b8 !important;
+    color: #334155 !important;
 }
 
 .btn-primary {
-    background-color: #1d6cf2 !important;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
     border: none !important;
+    transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-    background-color: #1554b8 !important;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-
-
-/* ================================================
-   PAGINATION
-================================================ */
-
-#pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    transition: all 0.2s ease;
 }
 
-#pagination button {
-    margin: 4px;
-    padding: 6px 12px;
-    border-radius: 5px;
+.btn-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-outline-primary,
+.btn-outline-info,
+.btn-outline-warning,
+.btn-outline-secondary {
+    transition: all 0.2s ease;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-info:hover,
+.btn-outline-warning:hover,
+.btn-outline-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 
@@ -300,23 +265,34 @@ textarea.form-control {
     display: none;
     position: fixed;
     z-index: 2000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
+    left: 0; 
+    top: 0;
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
 }
 
 .modal-content {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background: #ffffff;
     width: 440px;
-    padding: 25px;
+    padding: 28px;
     border-radius: 12px;
-    box-shadow: 0 0 25px rgba(0,0,0,0.35)
-    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    cursor: grab;
+}
+
+.modal-content:active {
+    cursor: grabbing;
 }
 
 .modal-content img {
     border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -327,21 +303,24 @@ textarea.form-control {
 
 .modal-header {
     font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 15px;
+    font-weight: 700;
+    margin-bottom: 20px;
     color: #1a1f36;
 }
 
 .close-btn {
     float: right;
-    font-size: 26px;
+    font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    color: #777;
+    color: #94a3b8;
+    transition: all 0.2s ease;
+    line-height: 1;
 }
 
 .close-btn:hover {
-    color: #000;
+    color: #1a1f36;
+    transform: rotate(90deg);
 }
 
 
@@ -351,11 +330,28 @@ textarea.form-control {
 ================================================ */
 
 .form-control {
-    border-radius: 6px !important;
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 10px 14px !important;
+    transition: all 0.2s ease !important;
+}
+
+.form-control:focus {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+    outline: none !important;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    font-size: 14px;
 }
 
 textarea.form-control {
     resize: none;
+    font-family: inherit;
 }
 
 
@@ -365,112 +361,110 @@ textarea.form-control {
 
 #previewModal .modal-content {
     width: 600px !important;
+    max-width: 90vw !important;
 }
 
 
-
 /* ================================================
-   ANIMACIONES SUAVES
+   SMOOTH ANIMATIONS
 ================================================ */
 
 .modal-content {
-    animation: fadeInScale 0.25s ease-out;
+    animation: fadeInScale 0.3s ease-out;
 }
 
 @keyframes fadeInScale {
     from {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.85);
+        transform: translate(-50%, -50%) scale(0.9);
     }
     to {
         opacity: 1;
         transform: translate(-50%, -50%) scale(1);
     }
 }
+
+
+
+
+
 /* ============================================================
-   STATUS CHECKER
-   Mismo look & feel que index
+   STATUS CHECKER - ADDITIONAL STYLES
    ============================================================ */
 
 .status-checker-container {
     max-width: 1400px;
     margin: 30px auto;
     padding: 20px;
-    background-color: #1e1e1e;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 .status-checker-title {
     font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 20px;
-    color: #ffffff;
+    color: #1a1f36;
 }
 
-/* Tabla */
-.status-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-    background-color: #111;
-}
-
-.status-table thead {
-    background-color: #2a2a2a;
-}
-
-.status-table th,
-.status-table td {
-    padding: 10px 12px;
-    border: 1px solid #333;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.status-table th {
-    color: #e0e0e0;
-    font-weight: 600;
-}
-
-.status-table td {
-    color: #ccc;
-}
-
-/* Separadores visuales OP vs Máquina */
+/* Visual separator for OP vs Machine columns */
 .status-table td.machine,
 .status-table th.machine {
-    background-color: #181818;
+    background-color: #f8fafc;
 }
 
-/* Estados */
+.status-table td:nth-child(6),
+.status-table th:nth-child(6) {
+    border-left: 3px solid #6366f1;
+}
+
+/* Status colors */
 .status-ok {
-    color: #4CAF50;
+    color: #10b981;
     font-weight: bold;
 }
 
 .status-warning {
-    color: #FFC107;
+    color: #f59e0b;
     font-weight: bold;
 }
 
 .status-error {
-    color: #F44336;
+    color: #ef4444;
     font-weight: bold;
 }
 
-/* Botones */
+/* Error text highlighting */
+.error-text {
+    color: #dc2626;
+    font-weight: 600;
+    background-color: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+}
+
+/* Enhanced hover effect without scale transform */
+.status-table tbody tr:hover td {
+    background-color: #f0f9ff !important;
+    box-shadow: inset 0 0 0 1px #bfdbfe;
+}
+
+/* Buttons within status table */
 .status-table button {
-    background-color: #3a3a3a;
+    background-color: #6366f1;
     color: #fff;
     border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
+    padding: 6px 12px;
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
 .status-table button:hover {
-    background-color: #555;
+    background-color: #4f46e5;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 /* Responsive */
@@ -478,25 +472,30 @@ textarea.form-control {
     .status-table {
         font-size: 0.8rem;
     }
+    .status-table th,
+    .status-table td {
+        padding: 8px 10px;
+    }
 }
 /* ================================================
-   STATUS CHECKER – ESTILOS ESPECÍFICOS
+   STATUS CHECKER – SPECIFIC STYLES
 ================================================ */
 
-/* Header superior */
+/* Header */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #ffffff;
-    padding: 15px 25px;
-    border-radius: 10px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    padding: 18px 30px;
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    border: 1px solid #e8ecf1;
 }
 
 .header h1 {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 600;
     color: #1a1f36;
     margin: 0;
@@ -505,73 +504,103 @@ textarea.form-control {
 .user-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-size: 14px;
 }
 
-/* Tabla Status Checker */
+/* Container for consistency */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Status table headers - hierarchical styling */
 .status-table th {
-    font-size: 13px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .status-table thead tr:first-child th {
-    background: #0f172a; /* más oscuro */
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 14px;
 }
 
 .status-table thead tr:nth-child(2) th {
-    background: #1e293b;
-    font-weight: 500;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    font-weight: 600;
+    padding: 12px;
 }
 
-/* Separación visual OP vs Máquina */
+/* First column (Batch N°) emphasis */
 .status-table td:nth-child(1),
 .status-table th:nth-child(1) {
-    background: #f8fafc;
-    font-weight: bold;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    font-weight: 700;
+    color: #1a1f36;
 }
 
-.status-table td:nth-child(6),
-.status-table th:nth-child(6) {
-    border-left: 3px solid #c7d2fe;
-}
-
-/* Diferencias detectadas */
-.error-text {
-    color: #e11d48;
-    font-weight: 600;
-    background-color: #fff1f2;
-}
-
-/* Filas hover más claras */
-.status-table tr:hover td {
-    background-color: #eef2ff !important;
-}
-
-/* Botón editar */
+/* Button styling within table */
 .status-table .btn-small {
-    background-color: #6366f1;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
     color: white;
     border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
 .status-table .btn-small:hover {
-    background-color: #4f46e5;
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-/* Paginación específica */
+/* Pagination specific */
+#pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+    gap: 6px;
+}
+
 #pagination button {
-    min-width: 38px;
+    min-width: 40px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #e8ecf1;
+    background: white;
+    color: #374151;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
-/* Modal edición (ligero ajuste visual) */
+#pagination button:hover {
+    background: #f8fafc;
+    border-color: #6366f1;
+    color: #6366f1;
+}
+
+#pagination button.btn-primary {
+    background: #6366f1 !important;
+    color: white !important;
+    border-color: #6366f1 !important;
+}
+
+/* Modal edit override */
 #editModal .modal-content {
-    border-top: 6px solid #6366f1;
+    border-top: 5px solid #6366f1;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 
 #editModal label {
     font-size: 13px;
     font-weight: 600;
     color: #374151;
+    margin-bottom: 6px;
+    display: block;
 }
